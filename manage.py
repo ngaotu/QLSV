@@ -83,7 +83,7 @@ class Manage_list:
         update_btn = Button(btn_frame,text = 'Cập nhật',command=self.update_student,bg='#5f9ea0',font=('Arial,sans-serif',13,'bold'),fg = 'white',width=10).grid(row = 0, column= 2, padx=10,pady=10)
         clear_btn = Button(btn_frame,text = 'Làm mới',bg='#5f9ea0',font=('Arial,sans-serif',13,'bold'),fg = 'white',width=10,command= self.clear_console).grid(row = 1, column= 1, padx=10,pady=10)
         close_btn = Button(btn_frame,text = 'Thoát',bg='#5f9ea0',font=('Arial,sans-serif',13,'bold'),fg = 'white',width=10,command= self.close).grid(row = 1, column= 2, padx=10,pady=10)
-
+        convertExl_btn = Button(btn_frame,text = 'Xuất',command  = self.convertToexel,bg='#5f9ea0',font=('Arial,sans-serif',13,'bold'),fg = 'white',width=10).grid(row = 1, column= 0, padx=10,pady=10)
         #### console_frame ####
         console_frame = Frame(self.window, bg = '#1c5775',highlightbackground='black',highlightthickness=3)
         console_frame.place(x = 460, y = 100, width=SCREEN_WIDTH - 460 , height= SCREEN_HEIGHT -100)
@@ -139,6 +139,7 @@ class Manage_list:
             self.mark.get()))
             con.commit()
             con.close()
+            messagebox.showinfo("Success","Success")
         except:
             messagebox.showerror("Error","Vui long nhap lai")
 
@@ -147,16 +148,26 @@ class Manage_list:
         cur = con.cursor()
         cur.execute("select * from student")
         rows = cur.fetchall()
-        table_name = []
-        for i in cur.description:
-            table_name.append(i[0])
-        print(table_name)
         if len(rows)!= 0:
             self.list.delete(*self.list.get_children())
             for row in rows:
                 self.list.insert('',END,values=row)
-            
-
+            con.commit()
+            # print(self.list.get_children())
+        
+        con.close()
+    def convertToexel(self):
+        con = pymysql.connect(host = "127.0.0.1",user = "root", password="ngaotu66",database="student")
+        cur = con.cursor()
+        cur.execute("select * from student")
+        rows = cur.fetchall()
+        table_name = []
+        for i in cur.description:
+            table_name.append(i[0])
+        if len(rows)!= 0:
+            # self.list.delete(*self.list.get_children())
+            # for row in rows:
+            #     self.list.insert('',END,values=row)
             wb = Workbook()
             ws = wb.active
             ws.title = "mysql.data"
@@ -165,9 +176,8 @@ class Manage_list:
                 ws.append(row)
             wb.save("student.csv")
             con.commit()
-            # print(self.list.get_children())
-            
         con.close()
+        messagebox.showinfo("Success","Success")
     def del_student(self):
         con = pymysql.connect(host='127.0.0.1', user='root',password='ngaotu66',database='student')
         cur = con.cursor()
@@ -175,6 +185,7 @@ class Manage_list:
         con.commit()
         con.close()
         self.clear_console()
+        messagebox.showinfo("Success","Success")
     def update_student(self):
         con = pymysql.connect(host = '127.0.0.1',user = 'root',password='ngaotu66',database='student')
         cur = con.cursor()
@@ -188,6 +199,7 @@ class Manage_list:
         con.commit()
         self.clear_console()
         con.close()
+        messagebox.showinfo("Success","Success")
     def search_student(self):
         con = pymysql.connect(host='127.0.0.1',user='root',password='ngaotu66',database='student')
         cur = con.cursor()
